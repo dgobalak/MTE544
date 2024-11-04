@@ -74,7 +74,7 @@ def sim_moodeng(initial_state=1,iteration = 20):
         measurement = sensor_measurement(next_state, C)
 
         predicted_belief = A @ belief
-        updated_belief = (C @ measurement) * predicted_belief
+        updated_belief = (C.T @ measurement) * predicted_belief
         
         # Normalize belief
         updated_belief = updated_belief / np.sum(updated_belief)
