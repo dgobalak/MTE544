@@ -22,9 +22,13 @@ def moodeng_behavior_update(state, A):
     # Given the current state, and the transition matrix A, 
     # randomly return the next state of Moo-Deng based on A
     ##### ADD your code here : #####
+    # Fetch and normalize the row corresponding to the current state
     row = A[state - 1]
     row = row / np.sum(row)
+    
+    # Determine the next state based on the probabilities in the row
     next_state = np.random.choice([1, 2, 3], p=row)
+    
     ##### END #####
     return next_state
 def sensor_measurement(state, C):
@@ -35,10 +39,14 @@ def sensor_measurement(state, C):
     # R -> np.array([0,1,0])
     # P -> np.array([0,0,1])
     ##### ADD your code here : #####
+    # Fetch and normalize the row corresponding to the current state
     row = C[state - 1]
     row = row / np.sum(row)
+    
+    # Determine the measurement based on the probabilities in the row
     measurement = np.random.choice([1, 2, 3], p=row)
     measurement = np.eye(3)[measurement - 1].T    
+    
     ##### END #####
     return measurement
 
@@ -49,6 +57,7 @@ def sim_moodeng(initial_state=1,iteration = 20):
     belief = np.array([1/3, 1/3, 1/3])  # Initial belief for the Bayesian filter
     
     ##### ADD your code here : #####
+    # Define the transition matrix A and the measurement matrix C
     A = np.array([
         [0.6, 0.2, 0.2],
         [0.4, 0.4, 0.1],
@@ -70,17 +79,21 @@ def sim_moodeng(initial_state=1,iteration = 20):
     for i in range(iteration):
                
         ##### ADD your code here : #####
+        # Calculate the next state and the measurement
         next_state = moodeng_behavior_update(state, A)
         measurement = sensor_measurement(next_state, C)
 
+        # Update the belief
         predicted_belief = A @ belief
         updated_belief = (C.T @ measurement) * predicted_belief
         
         # Normalize belief
         updated_belief = updated_belief / np.sum(updated_belief)
-                
+        
+        # Estimate the state
         estimated_state = np.argmax(updated_belief) + 1
         
+        # Update the state and belief
         belief = updated_belief
         state = next_state
 
